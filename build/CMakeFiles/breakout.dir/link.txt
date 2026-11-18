@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/breakout.dir/link.d CMakeFiles/breakout.dir/src/graphics.cpp.o CMakeFiles/breakout.dir/src/main.cpp.o -o breakout  /usr/lib/x86_64-linux-gnu/libSDL3_image.so.0.4.0 /usr/lib/x86_64-linux-gnu/libSDL3.so.0.4.2
