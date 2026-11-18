@@ -1,0 +1,3 @@
+/home/henry_conner/workspace/games/breakout/build/CMakeFiles/breakout.dir
+/home/henry_conner/workspace/games/breakout/build/CMakeFiles/edit_cache.dir
+/home/henry_conner/workspace/games/breakout/build/CMakeFiles/rebuild_cache.dir
