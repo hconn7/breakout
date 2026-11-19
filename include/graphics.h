@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_filesystem.h>
@@ -15,3 +17,6 @@ struct Graphics {
 };
 
 bool init(Graphics& graphics);
+bool loadSpritePng(Graphics& graphics);
+bool renderSpritePng(Graphics& graphics);
+bool renderAllBick(Graphics& graphics);

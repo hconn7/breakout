@@ -19,6 +19,12 @@ add_executable(breakout ${SOURCES})
 # 4. NOW apply your options and directories to the valid target
 target_compile_options(breakout PRIVATE -g -Wall -Wextra -Wshadow)
 
+
+add_custom_command(TARGET breakout POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${CMAKE_SOURCE_DIR}/assets"
+          "$<TARGET_FILE_DIR:breakout>/assets"
+)
 target_include_directories(breakout PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
     "${CMAKE_CURRENT_SOURCE_DIR}"
