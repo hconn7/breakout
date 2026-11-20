@@ -2,20 +2,25 @@
 #include "graphics.h"
 #include "grid.h"
 #include "input.h"
+#include "player.h"
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_timer.h>
 int main() {
   Graphics graphics{};
-  Input input{};
+  Player player;
 
   if (!init(graphics))
     return 0;
 
   loadSpritePng(graphics);
+  Uint64 t = SDL_GetTicksNS();
 
-  while (!input.update()) {
+  while (!update(player, t)) {
 
     SDL_RenderClear(graphics.renderer);
-    renderAllBick(graphics);
+    render(graphics, player);
     SDL_RenderPresent(graphics.renderer);
   }
+  destroy(graphics);
 }
