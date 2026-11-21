@@ -2,6 +2,9 @@
 #include "config.h"
 #include "graphics.h"
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_rect.h>
+#include <iostream>
+#include <vector>
 
 const SDL_FRect getBrickIndex(Brick::Type type, int health) {
   int brickMultiplierHealth = (6 - health);
@@ -29,4 +32,22 @@ const SDL_FRect getBrickIndex(Brick::Type type, int health) {
     break;
   }
   return rect;
+}
+void makeAllBricks(Brick& b) {
+  std::vector<SDL_FRect> allBricks;
+  float totalGridWidth = (Config::cols * pixelDataBrick::brickWidth);
+  for (int rows = 0; rows < Config::rows; rows++) {
+    for (int cols = 0; cols < Config::cols; cols++) {
+      SDL_FRect dst;
+      float startX = (360 - totalGridWidth) / 2.0f;
+
+      dst.x = 1 + startX + (cols * pixelDataBrick::brickWidth);
+      dst.y = Config::Y_OFF_SET + (rows * pixelDataBrick::brickHeight);
+      dst.w = pixelDataBrick::brickWidth;
+      dst.h = pixelDataBrick::brickHeight;
+      allBricks.push_back(dst);
+    }
+  }
+  b.m_bricks = allBricks;
+  std::cout << b.m_bricks.size();
 }

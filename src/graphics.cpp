@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "ball.h"
 #include "brick.h"
 #include "config.h"
 #include "player.h"
@@ -7,6 +8,7 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <vector>
 
 bool init(Graphics& graphics) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -68,24 +70,31 @@ void destroy(Graphics& graphics) {
   graphics.spritePng = nullptr;
 }
 
-bool renderAllBick(Graphics& graphics) {
-  float totalGridWidth = (Config::cols * pixelDataBrick::brickWidth + ((Config::cols - 2)));
-  for (int rows = 0; rows < Config::rows; rows++) {
-    for (int cols = 0; cols < Config::cols; cols++) {
-      SDL_FRect dst;
-      float startX = (360 - totalGridWidth) / 2.0f;
-      Brick::Type type = static_cast<Brick::Type>(rows);
-      SDL_FRect src{getBrickIndex(type, 6)};
+bool renderAllBricks(Graphics& graphics, Brick& b) {
+  for (SDL_FRect& r : b.m_bricks) {
 
-      dst.x = 1 + startX + (cols * pixelDataBrick::brickWidth);
-      dst.y = Config::Y_OFF_SET + (rows * pixelDataBrick::brickHeight);
-      dst.w = pixelDataBrick::brickWidth;
-      dst.h = pixelDataBrick::brickHeight;
-      SDL_RenderTexture(graphics.renderer, graphics.spritePng, &src, &dst);
-    }
+    Brick::Type type = static_cast<Brick::Type>(static_cast<int>(r.y / pixelDataBrick::brickHeight));
+    SDL_FRect src{getBrickIndex(type, 6)};
+    SDL_FRect dst{r.x, r.y, r.w, r.h};
+
+    SDL_RenderTexture(graphics.renderer, graphics.spritePng, &src, &dst);
+  }
+
+  return true;
+}
+
+bool renderBall(Graphics& graphics, Ball& ball) {
+  SDL_FRect ballSrc{20, 22, 12, 12};
+
+  SDL_FRect ballDst = {ball.posX, ball.posY, 12, 12};
+
+  if (!SDL_RenderTexture(graphics.renderer, graphics.spritePng, &ballSrc, &ballDst)) {
+    SDL_Log("Failed to render png %s", SDL_GetError());
+    return false;
   }
   return true;
 }
+
 bool renderPlayer(Graphics& graphics, Player& p) {
 
   SDL_FRect playerSpriteSrc{2, 68, 54, 15};
@@ -99,7 +108,8 @@ bool renderPlayer(Graphics& graphics, Player& p) {
   return true;
 }
 
-void render(Graphics& graphics, Player& player) {
-  renderAllBick(graphics);
+void render(Graphics& graphics, Player& player, Ball& ball, Brick& b) {
+  renderAllBricks(graphics, b);
   renderPlayer(graphics, player);
+  renderBall(graphics, ball);
 }

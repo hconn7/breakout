@@ -1,8 +1,8 @@
 #pragma once
 
 #include "config.h"
-#include "graphics.h"
 #include <SDL3/SDL_rect.h>
+#include <vector>
 struct Brick {
   enum class Type {
     red,
@@ -15,7 +15,9 @@ struct Brick {
   };
 
   int m_MaxHealth{6};
+  bool alive{true};
+  std::vector<SDL_FRect> m_bricks;
 };
 
 const SDL_FRect getBrickIndex(Brick::Type type, int health);
-bool renderBrick(Graphics& g);
+void makeAllBricks(Brick& b);

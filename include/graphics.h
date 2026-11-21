@@ -1,15 +1,19 @@
 #pragma once
 
+#include "ball.h"
+#include "brick.h"
 #include "player.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
+#include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <vector>
 
 struct Graphics {
   SDL_Renderer* renderer{nullptr};
@@ -19,8 +23,8 @@ struct Graphics {
 
 bool init(Graphics& graphics);
 void destroy(Graphics& graphics);
-void render(Graphics& graphics, Player& player);
+void render(Graphics& graphics, Player& player, Ball& ball, Brick& b);
 bool loadSpritePng(Graphics& graphics);
 bool renderSpritePng(Graphics& graphics);
-bool renderAllBick(Graphics& graphics);
+bool renderAllBricks(Graphics& graphics, Brick& allBricks);
 bool renderPlayer(Graphics& graphics, Player& player);

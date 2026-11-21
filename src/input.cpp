@@ -8,17 +8,13 @@
 #include <SDL3/SDL_timer.h>
 #include <iostream>
 
-bool update(Player& p, Uint64& time) {
+bool update(Player& p, float deltaTime) {
   float speed{200.0f};
 
   bool quit{false};
 
   SDL_Event event{};
   SDL_zero(event);
-  Uint64 currentTime = SDL_GetTicksNS();
-  float deltaTime = (currentTime - time) / 1000000000.0f;
-  time = currentTime;
-
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_EVENT_QUIT) {
       quit = true;

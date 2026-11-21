@@ -14,4 +14,4 @@ struct Input {
   bool quit{false};
 };
 
-bool update(Player& p, Uint64& time);
+bool update(Player& p, float time);

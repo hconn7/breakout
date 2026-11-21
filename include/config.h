@@ -1,10 +1,11 @@
 #pragma once
 namespace Config {
-
+constexpr int screenHeight{480};
+constexpr int screenWidth{360};
 constexpr int rows{6};
 constexpr int cols{10};
 constexpr int cellWidth{32};
-constexpr int cellHeight{18};
+constexpr int cellHeight{16};
 constexpr int X_OFF_SET{6};
 constexpr int Y_OFF_SET{10};
 
