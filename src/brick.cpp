@@ -2,6 +2,7 @@
 #include "config.h"
 #include "graphics.h"
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_rect.h>
 #include <iostream>
 #include <vector>
@@ -43,6 +44,7 @@ void makeAllBricks(AllBricks& arrBricks) {
 
       dst.x = 1 + startX + (cols * pixelDataBrick::brickWidth);
       dst.y = Config::Y_OFF_SET + (rows * pixelDataBrick::brickHeight);
+      SDL_Log("DST Y FOR BRICK: %f", dst.y);
       dst.w = pixelDataBrick::brickWidth;
       dst.h = pixelDataBrick::brickHeight;
 

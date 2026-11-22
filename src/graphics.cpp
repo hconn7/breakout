@@ -11,6 +11,7 @@
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
 #include <iostream>
+#include <string_view>
 #include <vector>
 
 bool initGraphics(Graphics& graphics) {
@@ -18,28 +19,18 @@ bool initGraphics(Graphics& graphics) {
     SDL_Log("Error loading Sub Systems %s", SDL_GetError());
     return false;
   }
-  if (!SDL_CreateWindowAndRenderer("Breakout", 360, 480, 0, &graphics.window, &graphics.renderer)) {
+  if (!SDL_CreateWindowAndRenderer("Breakout", 360, Config::screenHeight, 0, &graphics.window, &graphics.renderer)) {
     SDL_Log("Error init renderer and window%s", SDL_GetError());
     return false;
   }
   SDL_SetRenderVSync(graphics.renderer, 1);
   return true;
 }
-bool initFont(Text& t, Graphics& g) {
-  char* fontPath{};
+
+bool setText(Graphics& g, Text& t, const char* str) {
   SDL_Color color = {255, 255, 255, SDL_ALPHA_OPAQUE};
-  if (!TTF_Init()) {
-    SDL_Log("Couldn't init SDL_ttf: %s\n", SDL_GetError());
-    return false;
-  }
-  asprintf(&fontPath, "%sassets/PressStart2P-Regular.ttf", SDL_GetBasePath());
-  t.m_font = TTF_OpenFont(fontPath, 18.0f);
-  free(fontPath);
-  if (!t.m_font) {
-    SDL_Log("Couldn't open font: %s\n", SDL_GetError());
-    return false;
-  }
-  SDL_Surface* textSurface = TTF_RenderText_Blended(t.m_font, "TEST", 0, color);
+
+  SDL_Surface* textSurface = TTF_RenderText_Blended(t.m_font, str, 0, color);
   if (textSurface) {
     t.m_textTexture = SDL_CreateTextureFromSurface(g.renderer, textSurface);
     SDL_DestroySurface(textSurface);
@@ -51,17 +42,21 @@ bool initFont(Text& t, Graphics& g) {
   return true;
 }
 
-bool renderText(Graphics& g, Text& t) {
+bool renderText(Graphics& g, TextHud& t) {
   int w = 0, h = 0;
-  SDL_FRect dst;
-  const float scale = 4.0f;
+  setText(g, t.m_lives, t.m_lives.m_string.c_str());
+  setText(g, t.m_score, t.m_score.m_string.c_str());
 
   SDL_GetRenderOutputSize(g.renderer, &w, &h);
-  SDL_GetTextureSize(t.m_textTexture, &dst.w, &dst.h);
-  dst.x = ((w / scale) - dst.w) / 2.0f;
-  dst.y = ((h / scale) - dst.h) / 2.0f;
 
-  if (!SDL_RenderTexture(g.renderer, t.m_textTexture, NULL, &dst)) {
+  SDL_GetTextureSize(t.m_lives.m_textTexture, &t.m_lives.m_dst.w, &t.m_lives.m_dst.h);
+  SDL_GetTextureSize(t.m_score.m_textTexture, &t.m_score.m_dst.w, &t.m_score.m_dst.h);
+
+  if (!SDL_RenderTexture(g.renderer, t.m_lives.m_textTexture, NULL, &t.m_score.m_dst)) {
+    SDL_Log("Failed to set render Texture in Graphics call: %s", SDL_GetError());
+    return false;
+  }
+  if (!SDL_RenderTexture(g.renderer, t.m_score.m_textTexture, NULL, &t.m_lives.m_dst)) {
     SDL_Log("Failed to set render Texture in Graphics call: %s", SDL_GetError());
     return false;
   }
@@ -74,7 +69,7 @@ bool loadSpritePng(Graphics& graphics) {
 
   SDL_asprintf(&png_path, "%sassets/spritesheet-breakout_1.png", SDL_GetBasePath());
   surface = SDL_LoadPNG(png_path);
-  SDL_SetRenderLogicalPresentation(graphics.renderer, 360, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+  SDL_SetRenderLogicalPresentation(graphics.renderer, 360, Config::screenHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
   SDL_free(png_path);
   graphics.spritePng = SDL_CreateTextureFromSurface(graphics.renderer, surface);
@@ -120,7 +115,8 @@ bool renderAllBricks(Graphics& graphics, AllBricks& b) {
     if (!r.alive) {
       continue;
     }
-    Brick::Type type = static_cast<Brick::Type>(static_cast<int>(r.m_brick.y / pixelDataBrick::brickHeight));
+    float relativeY = r.m_brick.y - Config::Y_OFF_SET;
+    Brick::Type type = static_cast<Brick::Type>(static_cast<int>(relativeY / pixelDataBrick::brickHeight));
     SDL_FRect src{getBrickIndex(type, 6)};
     SDL_FRect dst{r.m_brick.x, r.m_brick.y, r.m_brick.w, r.m_brick.h};
 
@@ -155,7 +151,7 @@ bool renderPlayer(Graphics& graphics, Player& p) {
   return true;
 }
 
-void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& b, Text& t) {
+void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& b, TextHud& t) {
   renderAllBricks(graphics, b);
   renderPlayer(graphics, player);
   renderBall(graphics, ball);

@@ -2,6 +2,7 @@
 
 #include "audio.h"
 #include "graphics.h"
+#include "text.h"
 
 struct System {
   Audio m_audio{nullptr};
@@ -10,4 +11,5 @@ struct System {
   bool initSystem(Graphics& g);
   bool loadAudio(Audio& a);
   bool loadSpritePng(Graphics& a);
+  bool initFont(Text& t, TextHud& txtH);
 };

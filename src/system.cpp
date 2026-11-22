@@ -1,6 +1,8 @@
 
 #include "system.h"
+#include "config.h"
 #include "graphics.h"
+#include "text.h"
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_init.h>
 #include <cstdio>
@@ -11,7 +13,7 @@ bool System::initSystem(Graphics& g) {
     SDL_Log("Error loading Sub Systems %s", SDL_GetError());
     return false;
   }
-  if (!SDL_CreateWindowAndRenderer("Breakout", 360, 480, 0, &g.window, &g.renderer)) {
+  if (!SDL_CreateWindowAndRenderer("Breakout", 360, Config::screenHeight, 0, &g.window, &g.renderer)) {
     SDL_Log("Error init renderer and window%s", SDL_GetError());
     return false;
   }
@@ -51,10 +53,28 @@ bool System::loadSpritePng(Graphics& g) {
 
   SDL_asprintf(&png_path, "%sassets/spritesheet-breakout_1.png", SDL_GetBasePath());
   surface = SDL_LoadPNG(png_path);
-  SDL_SetRenderLogicalPresentation(g.renderer, 360, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+  SDL_SetRenderLogicalPresentation(g.renderer, 360, Config::screenHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
   SDL_free(png_path);
   g.spritePng = SDL_CreateTextureFromSurface(g.renderer, surface);
+
+  return true;
+}
+bool System::initFont(Text& t, TextHud& txtH) {
+  char* fontPath{};
+  if (!TTF_Init()) {
+    SDL_Log("Couldn't init SDL_ttf: %s\n", SDL_GetError());
+    return false;
+  }
+  asprintf(&fontPath, "%sassets/PressStart2P-Regular.ttf", SDL_GetBasePath());
+  t.m_font = TTF_OpenFont(fontPath, 18.0f);
+  free(fontPath);
+  if (!t.m_font) {
+    SDL_Log("Couldn't open font: %s\n", SDL_GetError());
+    return false;
+  }
+  txtH.m_lives.m_font = t.m_font;
+  txtH.m_score.m_font = t.m_font;
 
   return true;
 }

@@ -25,7 +25,7 @@ struct Graphics {
 bool initFont(Text& t, Graphics& g);
 bool initGraphics(Graphics& graphics);
 void destroy(Graphics& graphics);
-void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& allBricks, Text& t);
+void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& allBricks, TextHud& t);
 bool loadSpritePng(Graphics& graphics);
 bool renderSpritePng(Graphics& graphics);
 bool renderAllBricks(Graphics& graphics, AllBricks& b);

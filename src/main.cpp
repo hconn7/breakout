@@ -21,15 +21,19 @@ int main() {
   System system;
   Audio audio;
   Text text;
+  TextHud textHud;
+  PlayerState playerState;
 
   if (!system.initSystem(graphics)) {
     return 0;
   }
 
   makeAllBricks(bricks);
-  if (!initFont(text, graphics)) {
+
+  if (!system.initFont(text, textHud)) {
     return 1;
   }
+  setTextDst(textHud);
   system.loadAudio(audio);
   system.loadSpritePng(graphics);
 
@@ -43,9 +47,10 @@ int main() {
     if (handleInput(player, deltaTime)) {
       break;
     }
-    update.update(ball, deltaTime, bricks, collision, player);
+    update.update(ball, deltaTime, bricks, collision, player, playerState);
+    update.updateText(textHud, playerState);
     SDL_RenderClear(graphics.renderer);
-    render(graphics, player, ball, bricks, text);
+    render(graphics, player, ball, bricks, textHud);
     SDL_RenderPresent(graphics.renderer);
   }
   destroy(graphics);
