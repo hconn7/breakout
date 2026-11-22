@@ -117,6 +117,9 @@ void destroy(Graphics& graphics) {
 bool renderAllBricks(Graphics& graphics, AllBricks& b) {
   for (Brick& r : b.m_allBricks) {
 
+    if (!r.alive) {
+      continue;
+    }
     Brick::Type type = static_cast<Brick::Type>(static_cast<int>(r.m_brick.y / pixelDataBrick::brickHeight));
     SDL_FRect src{getBrickIndex(type, 6)};
     SDL_FRect dst{r.m_brick.x, r.m_brick.y, r.m_brick.w, r.m_brick.h};
