@@ -3,6 +3,7 @@
 #include "ball.h"
 #include "brick.h"
 #include "player.h"
+#include "text.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_filesystem.h>
@@ -21,10 +22,11 @@ struct Graphics {
   SDL_Texture* spritePng{nullptr};
 };
 
-bool init(Graphics& graphics);
+bool initFont(Text& t, Graphics& g);
+bool initGraphics(Graphics& graphics);
 void destroy(Graphics& graphics);
-void render(Graphics& graphics, Player& player, Ball& ball, Brick& b);
+void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& allBricks, Text& t);
 bool loadSpritePng(Graphics& graphics);
 bool renderSpritePng(Graphics& graphics);
-bool renderAllBricks(Graphics& graphics, Brick& allBricks);
+bool renderAllBricks(Graphics& graphics, AllBricks& b);
 bool renderPlayer(Graphics& graphics, Player& player);

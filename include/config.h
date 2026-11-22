@@ -24,3 +24,9 @@ constexpr int brickWidth{32};
 constexpr int brickHeight{16};
 
 } // namespace pixelDataBrick
+  //
+namespace BallProperties {
+constexpr float radius{5};
+constexpr float radiusSquared = radius * radius;
+
+} // namespace BallProperties

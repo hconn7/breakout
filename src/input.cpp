@@ -8,7 +8,7 @@
 #include <SDL3/SDL_timer.h>
 #include <iostream>
 
-bool update(Player& p, float deltaTime) {
+bool handleInput(Player& p, float deltaTime) {
   float speed{200.0f};
 
   bool quit{false};

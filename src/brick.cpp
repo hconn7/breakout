@@ -33,8 +33,8 @@ const SDL_FRect getBrickIndex(Brick::Type type, int health) {
   }
   return rect;
 }
-void makeAllBricks(Brick& b) {
-  std::vector<SDL_FRect> allBricks;
+
+void makeAllBricks(AllBricks& arrBricks) {
   float totalGridWidth = (Config::cols * pixelDataBrick::brickWidth);
   for (int rows = 0; rows < Config::rows; rows++) {
     for (int cols = 0; cols < Config::cols; cols++) {
@@ -45,9 +45,11 @@ void makeAllBricks(Brick& b) {
       dst.y = Config::Y_OFF_SET + (rows * pixelDataBrick::brickHeight);
       dst.w = pixelDataBrick::brickWidth;
       dst.h = pixelDataBrick::brickHeight;
-      allBricks.push_back(dst);
+
+      Brick brickI{
+          6, true, SDL_FRect{dst.x, dst.y, dst.w, dst.h}};
+
+      arrBricks.m_allBricks.push_back(brickI);
     }
   }
-  b.m_bricks = allBricks;
-  std::cout << b.m_bricks.size();
 }

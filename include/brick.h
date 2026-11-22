@@ -16,8 +16,12 @@ struct Brick {
 
   int m_MaxHealth{6};
   bool alive{true};
-  std::vector<SDL_FRect> m_bricks;
+  SDL_FRect m_brick;
 };
 
+struct AllBricks {
+  std::vector<Brick> m_allBricks;
+};
 const SDL_FRect getBrickIndex(Brick::Type type, int health);
-void makeAllBricks(Brick& b);
+
+void makeAllBricks(AllBricks& arrBricks);

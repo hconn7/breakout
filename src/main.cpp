@@ -1,24 +1,37 @@
 #include "ball.h"
 #include "brick.h"
+#include "collisionMng.h"
 #include "graphics.h"
 #include "input.h"
 #include "player.h"
+#include "system.h"
+#include "text.h"
+#include "update.h"
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
-#include <type_traits>
 
 int main() {
   Graphics graphics{};
   Player player{};
   Ball ball{};
-  Brick bricks{};
+  AllBricks bricks{};
+  CollisionMng collision{};
+  Update update;
+  System system;
+  Audio audio;
+  Text text;
 
-  if (!init(graphics))
+  if (!system.initSystem(graphics)) {
     return 0;
+  }
 
-  loadSpritePng(graphics);
   makeAllBricks(bricks);
+  if (!initFont(text, graphics)) {
+    return 1;
+  }
+  system.loadAudio(audio);
+  system.loadSpritePng(graphics);
 
   Uint64 time = SDL_GetTicksNS();
   while (true) {
@@ -27,12 +40,12 @@ int main() {
     float deltaTime = (currentTime - time) / 1000000000.0f;
     time = currentTime;
 
-    if (update(player, deltaTime)) {
+    if (handleInput(player, deltaTime)) {
       break;
     }
-    updateBall(ball, deltaTime);
+    update.update(ball, deltaTime, bricks, collision, player);
     SDL_RenderClear(graphics.renderer);
-    render(graphics, player, ball, bricks);
+    render(graphics, player, ball, bricks, text);
     SDL_RenderPresent(graphics.renderer);
   }
   destroy(graphics);

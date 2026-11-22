@@ -1,13 +1,15 @@
 #pragma once
 
+#include "brick.h"
+#include "config.h"
 #include <SDL3/SDL_stdinc.h>
 struct Ball {
-  float posY{100};
-  float posX{100};
+  float posY{200};
+  float posX{Config::screenWidth / 2.f};
   float radius{5};
-  float speed{100};
+  float speedX{150};
+  float speedY{150};
 };
 
-bool updateBall(Ball& ball, float deltaTime);
-void resolveBrick(Ball& ball);
-bool detectWallHitX(Ball& b, float dt);
+bool detectPlayerHit(Ball& b);
+bool updateBall(Ball& ball, float deltaTime, AllBricks& b);

@@ -1,16 +1,19 @@
+
 #include "graphics.h"
 #include "ball.h"
 #include "brick.h"
 #include "config.h"
 #include "player.h"
+#include "text.h"
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <iostream>
 #include <vector>
 
-bool init(Graphics& graphics) {
+bool initGraphics(Graphics& graphics) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("Error loading Sub Systems %s", SDL_GetError());
     return false;
@@ -22,7 +25,48 @@ bool init(Graphics& graphics) {
   SDL_SetRenderVSync(graphics.renderer, 1);
   return true;
 }
+bool initFont(Text& t, Graphics& g) {
+  char* fontPath{};
+  SDL_Color color = {255, 255, 255, SDL_ALPHA_OPAQUE};
+  if (!TTF_Init()) {
+    SDL_Log("Couldn't init SDL_ttf: %s\n", SDL_GetError());
+    return false;
+  }
+  asprintf(&fontPath, "%sassets/PressStart2P-Regular.ttf", SDL_GetBasePath());
+  t.m_font = TTF_OpenFont(fontPath, 18.0f);
+  free(fontPath);
+  if (!t.m_font) {
+    SDL_Log("Couldn't open font: %s\n", SDL_GetError());
+    return false;
+  }
+  SDL_Surface* textSurface = TTF_RenderText_Blended(t.m_font, "TEST", 0, color);
+  if (textSurface) {
+    t.m_textTexture = SDL_CreateTextureFromSurface(g.renderer, textSurface);
+    SDL_DestroySurface(textSurface);
+  }
+  if (!t.m_textTexture) {
+    SDL_Log("Couldn't create text: %s\n", SDL_GetError());
+    return false;
+  }
+  return true;
+}
 
+bool renderText(Graphics& g, Text& t) {
+  int w = 0, h = 0;
+  SDL_FRect dst;
+  const float scale = 4.0f;
+
+  SDL_GetRenderOutputSize(g.renderer, &w, &h);
+  SDL_GetTextureSize(t.m_textTexture, &dst.w, &dst.h);
+  dst.x = ((w / scale) - dst.w) / 2.0f;
+  dst.y = ((h / scale) - dst.h) / 2.0f;
+
+  if (!SDL_RenderTexture(g.renderer, t.m_textTexture, NULL, &dst)) {
+    SDL_Log("Failed to set render Texture in Graphics call: %s", SDL_GetError());
+    return false;
+  }
+  return true;
+}
 bool loadSpritePng(Graphics& graphics) {
 
   SDL_Surface* surface{nullptr};
@@ -70,12 +114,12 @@ void destroy(Graphics& graphics) {
   graphics.spritePng = nullptr;
 }
 
-bool renderAllBricks(Graphics& graphics, Brick& b) {
-  for (SDL_FRect& r : b.m_bricks) {
+bool renderAllBricks(Graphics& graphics, AllBricks& b) {
+  for (Brick& r : b.m_allBricks) {
 
-    Brick::Type type = static_cast<Brick::Type>(static_cast<int>(r.y / pixelDataBrick::brickHeight));
+    Brick::Type type = static_cast<Brick::Type>(static_cast<int>(r.m_brick.y / pixelDataBrick::brickHeight));
     SDL_FRect src{getBrickIndex(type, 6)};
-    SDL_FRect dst{r.x, r.y, r.w, r.h};
+    SDL_FRect dst{r.m_brick.x, r.m_brick.y, r.m_brick.w, r.m_brick.h};
 
     SDL_RenderTexture(graphics.renderer, graphics.spritePng, &src, &dst);
   }
@@ -108,8 +152,9 @@ bool renderPlayer(Graphics& graphics, Player& p) {
   return true;
 }
 
-void render(Graphics& graphics, Player& player, Ball& ball, Brick& b) {
+void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& b, Text& t) {
   renderAllBricks(graphics, b);
   renderPlayer(graphics, player);
   renderBall(graphics, ball);
+  renderText(graphics, t);
 }
