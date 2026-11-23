@@ -25,7 +25,17 @@ bool CollisionMng::collidedWithBrick(Ball& ball, AllBricks& bricks) {
 
     if (distantceSquared < radiusSquaured) {
       collided = true;
-      bricks.m_allBricks[brick].alive = false;
+
+      if (bricks.m_allBricks[brick].m_currentHealth <= 0) {
+        bricks.m_allBricks[brick].alive = false;
+      } else if (static_cast<int>(bricks.m_allBricks[brick].type) >= 4) {
+        bricks.m_allBricks[brick].alive = false;
+      } else if (static_cast<int>(bricks.m_allBricks[brick].type) >= 2) {
+        bricks.m_allBricks[brick].m_currentHealth -= 2;
+      } else {
+        bricks.m_allBricks[brick].m_currentHealth -= 1;
+      }
+
       if (std::abs(distX) > std::abs(distY)) {
         ball.speedX = -ball.speedX;
       } else if (std::abs(distY) > std::abs(distX)) {
@@ -55,7 +65,7 @@ bool CollisionMng::detectWallHitY(Ball& b) {
   if (b.posY + (b.radius * 2) > Config::screenHeight) {
     b.posY = 150;
     return true;
-  } else if (b.posY < 0) {
+  } else if (b.posY + 50 < 0) {
     b.posY = 0;
     b.speedY = -1 * (b.speedY);
   }

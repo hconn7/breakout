@@ -6,7 +6,7 @@
 
 struct System {
   Audio m_audio{nullptr};
-  Graphics m_graphics{nullptr};
+  Graphics m_graphics{};
 
   bool initSystem(Graphics& g);
   bool loadAudio(Audio& a);

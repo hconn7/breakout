@@ -13,8 +13,9 @@ struct Brick {
     orange,
     maxBricks
   };
-
-  int m_MaxHealth{6};
+  Type type;
+  int m_maxHealth{};
+  int m_currentHealth{m_maxHealth};
   bool alive{true};
   SDL_FRect m_brick;
 };

@@ -25,7 +25,7 @@ int main() {
   PlayerState playerState;
 
   if (!system.initSystem(graphics)) {
-    return 0;
+    return 1;
   }
 
   makeAllBricks(bricks);

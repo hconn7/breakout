@@ -14,12 +14,29 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
-#include <vector>
 
 struct Graphics {
   SDL_Renderer* renderer{nullptr};
   SDL_Window* window{nullptr};
   SDL_Texture* spritePng{nullptr};
+
+  Graphics() = default;
+
+  ~Graphics() {
+    if (spritePng) {
+      SDL_DestroyTexture(spritePng);
+    }
+    if (renderer) {
+      SDL_DestroyRenderer(renderer);
+    }
+    if (window) {
+      SDL_DestroyWindow(window);
+    }
+  }
+
+  Graphics(const Graphics&) = delete;
+
+  Graphics& operator=(const Graphics&) = delete;
 };
 
 bool initFont(Text& t, Graphics& g);

@@ -10,9 +10,6 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
-#include <iostream>
-#include <string_view>
-#include <vector>
 
 bool initGraphics(Graphics& graphics) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -87,17 +84,6 @@ bool renderSpritePng(Graphics& graphics) {
   return true;
 }
 
-bool renderBrick(Graphics& g) {
-  SDL_FRect src{getBrickIndex(Brick::Type::red, 6)};
-  SDL_FRect dst{100, 100, 32, 16};
-
-  if (!SDL_RenderTexture(g.renderer, g.spritePng, &src, &dst)) {
-    SDL_Log("Failed to render brick %s", SDL_GetError());
-    return false;
-  }
-  return true;
-}
-
 void destroy(Graphics& graphics) {
   SDL_DestroyRenderer(graphics.renderer);
   graphics.renderer = nullptr;
@@ -117,7 +103,7 @@ bool renderAllBricks(Graphics& graphics, AllBricks& b) {
     }
     float relativeY = r.m_brick.y - Config::Y_OFF_SET;
     Brick::Type type = static_cast<Brick::Type>(static_cast<int>(relativeY / pixelDataBrick::brickHeight));
-    SDL_FRect src{getBrickIndex(type, 6)};
+    SDL_FRect src{getBrickIndex(type, r.m_currentHealth)};
     SDL_FRect dst{r.m_brick.x, r.m_brick.y, r.m_brick.w, r.m_brick.h};
 
     SDL_RenderTexture(graphics.renderer, graphics.spritePng, &src, &dst);
