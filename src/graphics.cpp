@@ -1,15 +1,24 @@
 
 #include "graphics.h"
+#include "UI.h"
 #include "ball.h"
 #include "brick.h"
 #include "config.h"
 #include "player.h"
 #include "text.h"
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_oldnames.h>
+#include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <cstdlib>
+#include <iostream>
+#include <ranges>
+#include <vector>
 
 bool initGraphics(Graphics& graphics) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -35,6 +44,30 @@ bool setText(Graphics& g, Text& t, const char* str) {
   if (!t.m_textTexture) {
     SDL_Log("Couldn't create text: %s\n", SDL_GetError());
     return false;
+  }
+  return true;
+}
+bool renderEndScreen(SDL_Renderer* renderer, UI& ui) {
+  Text& score = ui.m_endUI.m_textScore;
+  Text& replay = ui.m_endUI.m_textReplay;
+  SDL_GetTextureSize(score.m_textTexture, &score.m_dst.w, &score.m_dst.h);
+  SDL_GetTextureSize(replay.m_textTexture, &replay.m_dst.w, &replay.m_dst.h);
+  return true;
+}
+
+bool renderStartMenu(Graphics& g, UI& ui) {
+
+  Text& breakout = ui.m_menu.m_textBreakout;
+  Text& start = ui.m_menu.m_textStart;
+  Text& highScore = ui.m_menu.m_textHighScore;
+  std::vector<Text> allMenuText{highScore, start, breakout};
+  SDL_SetRenderDrawColor(g.renderer, 24, 58, 74, 255);
+  for (size_t i = 0; i < allMenuText.size(); i++) {
+    SDL_RenderFillRect(g.renderer, &allMenuText[i].m_dst);
+    if (!SDL_RenderTexture(g.renderer, allMenuText[i].m_textTexture, NULL, &allMenuText[i].m_dst)) {
+      SDL_Log("Failed to render MenuText: %s", SDL_GetError());
+      return false;
+    }
   }
   return true;
 }
@@ -84,17 +117,6 @@ bool renderSpritePng(Graphics& graphics) {
   return true;
 }
 
-void destroy(Graphics& graphics) {
-  SDL_DestroyRenderer(graphics.renderer);
-  graphics.renderer = nullptr;
-
-  SDL_DestroyWindow(graphics.window);
-  graphics.window = nullptr;
-
-  SDL_DestroyTexture(graphics.spritePng);
-  graphics.spritePng = nullptr;
-}
-
 bool renderAllBricks(Graphics& graphics, AllBricks& b) {
   for (Brick& r : b.m_allBricks) {
 
@@ -142,4 +164,22 @@ void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& b, TextHu
   renderPlayer(graphics, player);
   renderBall(graphics, ball);
   renderText(graphics, t);
+}
+void destroy(Graphics& graphics, UI& ui) {
+  SDL_DestroyRenderer(graphics.renderer);
+  graphics.renderer = nullptr;
+
+  SDL_DestroyWindow(graphics.window);
+  graphics.window = nullptr;
+
+  SDL_DestroyTexture(graphics.spritePng);
+  graphics.spritePng = nullptr;
+
+  TTF_CloseFont(ui.m_endUI.m_font);
+  ui.m_endUI.m_font = nullptr;
+
+  TTF_CloseFont(ui.m_menu.m_font);
+  ui.m_menu.m_font = nullptr;
+
+  TTF_Quit();
 }

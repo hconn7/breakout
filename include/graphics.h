@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UI.h"
 #include "ball.h"
 #include "brick.h"
 #include "player.h"
@@ -41,9 +42,10 @@ struct Graphics {
 
 bool initFont(Text& t, Graphics& g);
 bool initGraphics(Graphics& graphics);
-void destroy(Graphics& graphics);
+void destroy(Graphics& graphics, UI& ui);
 void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& allBricks, TextHud& t);
 bool loadSpritePng(Graphics& graphics);
 bool renderSpritePng(Graphics& graphics);
 bool renderAllBricks(Graphics& graphics, AllBricks& b);
 bool renderPlayer(Graphics& graphics, Player& player);
+bool renderStartMenu(Graphics& g, UI& ui);

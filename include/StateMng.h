@@ -1,5 +1,5 @@
-struct EventManager {
-  enum class Type {
+struct StateMng {
+  enum class State {
     START,
     LEVEL1,
     LEVEL2,
@@ -7,4 +7,6 @@ struct EventManager {
     GAMPEPLAY,
     END
   };
+
+  State m_currentState;
 };

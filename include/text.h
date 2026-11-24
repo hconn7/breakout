@@ -23,3 +23,4 @@ struct TextHud {
 };
 
 void setTextDst(TextHud& t);
+bool createTextTexture(Text& t, SDL_Renderer* r);
