@@ -2,6 +2,8 @@
 
 #include "config.h"
 #include <SDL3/SDL_rect.h>
+#include <span>
+#include <string>
 #include <vector>
 struct Brick {
   enum class Type {
@@ -21,8 +23,11 @@ struct Brick {
 };
 
 struct AllBricks {
-  std::vector<Brick> m_allBricks;
+  std::vector<Brick> m_allBrickslvl1;
+  std::vector<Brick> m_allBrickslvl2;
+  std::vector<Brick> m_allBrickslvl3;
 };
 const SDL_FRect getBrickIndex(Brick::Type type, int health);
-
+bool loadBricks(AllBricks& allb, std::string lvlData);
 void makeAllBricks(AllBricks& arrBricks);
+bool allBricksDead(std::span<Brick> bricks);

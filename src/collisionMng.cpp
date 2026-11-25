@@ -4,20 +4,21 @@
 #include <SDL3/SDL_rect.h>
 #include <algorithm>
 #include <cstdlib>
+#include <span>
 
-bool CollisionMng::collidedWithBrick(Ball& ball, AllBricks& bricks) {
+bool CollisionMng::collidedWithBrick(Ball& ball, std::vector<Brick>& bricks) {
   bool collided{false};
   float centerX = ball.posX + BallProperties::radius;
   float centerY = ball.posY + BallProperties::radius;
   float radiusSquaured = BallProperties::radiusSquared;
 
-  for (size_t brick = 0; brick < bricks.m_allBricks.size(); brick++) {
-    if (!bricks.m_allBricks[brick].alive) {
+  for (size_t brick = 0; brick < bricks.size(); brick++) {
+    if (!bricks[brick].alive) {
       continue;
     }
-    float closestX = std::clamp(centerX, bricks.m_allBricks[brick].m_brick.x, bricks.m_allBricks[brick].m_brick.x + pixelDataBrick::brickWidth);
+    float closestX = std::clamp(centerX, bricks[brick].m_brick.x, bricks[brick].m_brick.x + pixelDataBrick::brickWidth);
     // SDL_Log("Clamped X: %f\n", closestX);
-    float closestY = std::clamp(centerY, bricks.m_allBricks[brick].m_brick.y, bricks.m_allBricks[brick].m_brick.y + pixelDataBrick::brickHeight);
+    float closestY = std::clamp(centerY, bricks[brick].m_brick.y, bricks[brick].m_brick.y + pixelDataBrick::brickHeight);
 
     float distX = centerX - closestX;
     float distY = centerY - closestY;
@@ -26,14 +27,14 @@ bool CollisionMng::collidedWithBrick(Ball& ball, AllBricks& bricks) {
     if (distantceSquared < radiusSquaured) {
       collided = true;
 
-      if (bricks.m_allBricks[brick].m_currentHealth <= 0) {
-        bricks.m_allBricks[brick].alive = false;
-      } else if (static_cast<int>(bricks.m_allBricks[brick].type) >= 4) {
-        bricks.m_allBricks[brick].alive = false;
-      } else if (static_cast<int>(bricks.m_allBricks[brick].type) >= 2) {
-        bricks.m_allBricks[brick].m_currentHealth -= 2;
+      if (bricks[brick].m_currentHealth <= 0) {
+        bricks[brick].alive = false;
+      } else if (static_cast<int>(bricks[brick].type) >= 4) {
+        bricks[brick].alive = false;
+      } else if (static_cast<int>(bricks[brick].type) >= 2) {
+        bricks[brick].m_currentHealth -= 2;
       } else {
-        bricks.m_allBricks[brick].m_currentHealth -= 1;
+        bricks[brick].m_currentHealth -= 1;
       }
 
       if (std::abs(distX) > std::abs(distY)) {
@@ -65,15 +66,14 @@ bool CollisionMng::detectWallHitY(Ball& b) {
   if (b.posY + (b.radius * 2) > Config::screenHeight) {
     b.posY = 150;
     return true;
-  } else if (b.posY + 50 < 0) {
-    b.posY = 0;
+  } else if (b.posY <= 0 + 50) {
+    b.posY = 50;
     b.speedY = -1 * (b.speedY);
   }
   return false;
 }
 
 void CollisionMng::collidedWithPlayer(Ball& b, Player& p) {
-
   float centerX = b.posX + BallProperties::radius;
   float centerY = b.posY + BallProperties::radius;
   float radiusSquaured = BallProperties::radiusSquared;

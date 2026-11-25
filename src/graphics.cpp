@@ -1,5 +1,6 @@
 
 #include "graphics.h"
+#include "StateMng.h"
 #include "UI.h"
 #include "ball.h"
 #include "brick.h"
@@ -15,6 +16,7 @@
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include <ranges>
@@ -50,8 +52,23 @@ bool setText(Graphics& g, Text& t, const char* str) {
 bool renderEndScreen(SDL_Renderer* renderer, UI& ui) {
   Text& score = ui.m_endUI.m_textScore;
   Text& replay = ui.m_endUI.m_textReplay;
-  SDL_GetTextureSize(score.m_textTexture, &score.m_dst.w, &score.m_dst.h);
-  SDL_GetTextureSize(replay.m_textTexture, &replay.m_dst.w, &replay.m_dst.h);
+
+  std::vector<Text> allEndText{score, replay};
+  for (size_t i = 0; i < allEndText.size(); i++) {
+    if (allEndText[i].isHovered) {
+      SDL_SetRenderDrawColor(renderer, 20, 45, 60, 255);
+      SDL_RenderFillRect(renderer, &allEndText[i].m_dst);
+
+      SDL_SetRenderDrawColor(renderer, 100, 220, 225, 250);
+      SDL_RenderRect(renderer, &allEndText[i].m_dst);
+    } else {
+      SDL_SetTextureColorMod(allEndText[i].m_textTexture, 255, 255, 255);
+    }
+    if (!SDL_RenderTexture(renderer, allEndText[i].m_textTexture, NULL, &allEndText[i].m_dst)) {
+      SDL_Log("Failed to render MenuText: %s", SDL_GetError());
+      return false;
+    }
+  }
   return true;
 }
 
@@ -61,9 +78,16 @@ bool renderStartMenu(Graphics& g, UI& ui) {
   Text& start = ui.m_menu.m_textStart;
   Text& highScore = ui.m_menu.m_textHighScore;
   std::vector<Text> allMenuText{highScore, start, breakout};
-  SDL_SetRenderDrawColor(g.renderer, 24, 58, 74, 255);
   for (size_t i = 0; i < allMenuText.size(); i++) {
-    SDL_RenderFillRect(g.renderer, &allMenuText[i].m_dst);
+    if (allMenuText[i].isHovered) {
+      SDL_SetRenderDrawColor(g.renderer, 20, 45, 60, 255);
+      SDL_RenderFillRect(g.renderer, &start.m_dst);
+
+      SDL_SetRenderDrawColor(g.renderer, 100, 220, 255, 255);
+      SDL_RenderRect(g.renderer, &start.m_dst);
+    } else {
+      SDL_SetTextureColorMod(start.m_textTexture, 255, 255, 255);
+    }
     if (!SDL_RenderTexture(g.renderer, allMenuText[i].m_textTexture, NULL, &allMenuText[i].m_dst)) {
       SDL_Log("Failed to render MenuText: %s", SDL_GetError());
       return false;
@@ -116,10 +140,9 @@ bool renderSpritePng(Graphics& graphics) {
   }
   return true;
 }
-
-bool renderAllBricks(Graphics& graphics, AllBricks& b) {
-  for (Brick& r : b.m_allBricks) {
-
+bool renderAllBricks(Graphics& graphics, std::span<Brick> b) {
+  assert(b.size() != 0);
+  for (Brick& r : b) {
     if (!r.alive) {
       continue;
     }
@@ -159,7 +182,8 @@ bool renderPlayer(Graphics& graphics, Player& p) {
   return true;
 }
 
-void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& b, TextHud& t) {
+void render(Graphics& graphics, Player& player, Ball& ball, std::vector<Brick>& b, TextHud& t) {
+
   renderAllBricks(graphics, b);
   renderPlayer(graphics, player);
   renderBall(graphics, ball);

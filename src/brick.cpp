@@ -3,6 +3,8 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_rect.h>
+#include <span>
+#include <string>
 #include <vector>
 
 const SDL_FRect getBrickIndex(Brick::Type type, int health) {
@@ -32,33 +34,79 @@ const SDL_FRect getBrickIndex(Brick::Type type, int health) {
   }
   return rect;
 }
-
-void makeAllBricks(AllBricks& arrBricks) {
+bool loadBricks(AllBricks& allb, std::string lvlData) {
+  SDL_Log("LEVEL DATA IS: %c", lvlData[0]);
+  std::vector<Brick> arrayBricks;
+  int type{};
+  int rowMax = lvlData[1] - '0';
   float totalGridWidth = (Config::cols * pixelDataBrick::brickWidth);
-  for (int rows = 0; rows < Config::rows; rows++) {
+  size_t charIndex = 2;
+  char c = lvlData[charIndex];
+  for (int rows = 0; rows < rowMax; rows++) {
     for (int cols = 0; cols < Config::cols; cols++) {
+
+      switch (c) {
+      case 'O':
+        type = (5);
+        break;
+      case 'Y':
+        type = (4);
+        break;
+      case 'P':
+        type = 3;
+        break;
+      case 'B':
+        type = 2;
+        break;
+      case 'G':
+        type = 1;
+        break;
+      case 'R':
+        type = 0;
+        break;
+      default:
+        SDL_Log("defaut triggered");
+        continue;
+      }
+      Brick::Type typeB = static_cast<Brick::Type>(type);
       SDL_FRect dst;
       float startX = (360 - totalGridWidth) / 2.0f;
-      Brick::Type type = static_cast<Brick::Type>(rows);
       dst.x = 1 + startX + (cols * pixelDataBrick::brickWidth);
       dst.y = Config::Y_OFF_SET + (rows * pixelDataBrick::brickHeight);
-      SDL_Log("DST Y FOR BRICK: %f", dst.y);
       dst.w = pixelDataBrick::brickWidth;
       dst.h = pixelDataBrick::brickHeight;
 
       int maxHealth{};
-      if (static_cast<int>(type) >= 4) {
+      if (typeB == Brick::Type::orange || typeB == Brick::Type::yellow) {
         maxHealth = 1;
-      } else if (static_cast<int>(type) >= 2) {
+      } else if (typeB == Brick::Type::purple || typeB == Brick::Type::blue) {
         maxHealth = 3;
       } else {
         maxHealth = 6;
       }
-
+      SDL_Log("Making brick with Type %d", static_cast<int>(typeB));
       Brick brickI{
-          type, maxHealth, 6, true, SDL_FRect{dst.x, dst.y, dst.w, dst.h}};
-
-      arrBricks.m_allBricks.push_back(brickI);
+          typeB, maxHealth, 6, true, SDL_FRect{dst.x, dst.y, dst.w, dst.h}};
+      arrayBricks.push_back(brickI);
+      charIndex++;
     }
   }
+  if (lvlData[0] == '1') {
+    allb.m_allBrickslvl1 = std::move(arrayBricks);
+  }
+  if (lvlData[0] == '2') {
+    allb.m_allBrickslvl2 = std::move(arrayBricks);
+  }
+  if (lvlData[0] == '3')
+    allb.m_allBrickslvl3 = std::move(arrayBricks);
+  return true;
+}
+
+bool allBricksDead(std::span<Brick> bricks) {
+  for (const auto& b : bricks) {
+    if (b.alive) {
+      return false;
+    }
+  }
+  return true;
 }

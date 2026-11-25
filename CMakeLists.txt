@@ -25,6 +25,12 @@ add_custom_command(TARGET breakout POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
           "${CMAKE_SOURCE_DIR}/assets"
           "$<TARGET_FILE_DIR:breakout>/assets"
+            "${CMAKE_SOURCE_DIR}/levelDat"
+            "$<TARGET_FILE_DIR:breakout>/levelDat"
+            "${CMAKE_SOURCE_DIR}/playerDat"
+            "$<TARGET_FILE_DIR:breakout>/playerDat"
+
+
 )
 target_include_directories(breakout PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}/include"

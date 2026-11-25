@@ -15,6 +15,7 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
+#include <vector>
 
 struct Graphics {
   SDL_Renderer* renderer{nullptr};
@@ -43,9 +44,10 @@ struct Graphics {
 bool initFont(Text& t, Graphics& g);
 bool initGraphics(Graphics& graphics);
 void destroy(Graphics& graphics, UI& ui);
-void render(Graphics& graphics, Player& player, Ball& ball, AllBricks& allBricks, TextHud& t);
+void render(Graphics& graphics, Player& player, Ball& ball, std::vector<Brick>&, TextHud& t);
 bool loadSpritePng(Graphics& graphics);
 bool renderSpritePng(Graphics& graphics);
 bool renderAllBricks(Graphics& graphics, AllBricks& b);
 bool renderPlayer(Graphics& graphics, Player& player);
 bool renderStartMenu(Graphics& g, UI& ui);
+bool renderEndScreen(SDL_Renderer* renderer, UI& ui);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "StateMng.h"
+#include "UI.h"
 #include "player.h"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_keyboard.h>
@@ -14,4 +16,4 @@ struct Input {
   bool quit{false};
 };
 
-bool handleInput(Player& p, float time);
+bool handleInput(Player& p, PlayerState& ps, float deltaTime, UI& ui, SDL_Renderer* r, StateMng& state);

@@ -1,13 +1,21 @@
 #include "update.h"
+#include "StateMng.h"
 #include "ball.h"
 #include "brick.h"
 #include "collisionMng.h"
 #include "player.h"
 #include <format>
 
-void Update::update(Ball& b, float deltaTime, AllBricks& bricks, CollisionMng& c, Player& p, PlayerState& pState) {
+void Update::update(Ball& b, float deltaTime, std::vector<Brick>& bricks, CollisionMng& c, Player& p, PlayerState& pState, StateMng& state) {
   //  SDL_Log("Ball X: %f\n", b.posX);
   // SDL_Log("Ball Y: %f\n", b.posY);
+  if (pState.m_lives == 0) {
+    if (pState.m_Highscore <= pState.m_score) {
+      pState.m_Highscore = pState.m_score;
+      writePlayerData(pState, pState.m_Highscore);
+    }
+    state.m_currentState = StateMng::State::END;
+  }
   if (c.collidedWithBrick(b, bricks)) {
     pState.m_score += 10;
   }
@@ -15,6 +23,15 @@ void Update::update(Ball& b, float deltaTime, AllBricks& bricks, CollisionMng& c
   c.detectWallHitX(b);
   if (c.detectWallHitY(b)) {
     pState.m_lives -= 1;
+  }
+  if (allBricksDead(bricks)) {
+    if (state.m_currentState == StateMng::State::LEVEL1) {
+      state.m_currentState = StateMng::State::LEVEL2;
+    } else if (state.m_currentState == StateMng::State::LEVEL2) {
+      state.m_currentState = StateMng::State::LEVEL3;
+    } else {
+      state.m_currentState = StateMng::State::END;
+    }
   }
 
   b.posX += b.speedX * deltaTime;

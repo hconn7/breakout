@@ -12,6 +12,7 @@ struct Text {
   SDL_Texture* m_textTexture{nullptr};
   std::string m_string;
   SDL_FRect m_dst;
+  bool isHovered{false};
 
   ~Text() = default;
 };

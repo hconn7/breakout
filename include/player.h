@@ -4,6 +4,7 @@
 struct PlayerState {
   int m_lives{3};
   int m_score{0};
+  int m_Highscore{};
 };
 
 struct Player {
@@ -12,3 +13,6 @@ struct Player {
   float posY{405};
   SDL_FRect player{posX, posY, 54, 14};
 };
+
+bool writePlayerData(PlayerState& p, int score);
+bool readPlayerData(PlayerState& p);

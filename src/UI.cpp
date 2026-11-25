@@ -20,9 +20,9 @@ bool setUIMenu(UI& ui, Text& t, SDL_Renderer* renderer, PlayerState& p) {
   // SET STRINGS
   menuUI.m_textBreakout.m_string = "Breakout";
   menuUI.m_textStart.m_string = "Start Game";
-  menuUI.m_textHighScore.m_string = "High Score: " + std::to_string(p.m_score);
+  menuUI.m_textHighScore.m_string = "High Score: " + std::to_string(p.m_Highscore);
 
-  endUI.m_textScore.m_string = "High Score";
+  endUI.m_textScore.m_string = "Score: " + std::to_string(p.m_score);
   endUI.m_textReplay.m_string = "Replay";
 
   // GIVE TO CPU
@@ -53,19 +53,23 @@ bool setUIMenu(UI& ui, Text& t, SDL_Renderer* renderer, PlayerState& p) {
   setDestRectTxt(menuUI.m_textHighScore, 180, 400, menuUI.m_textHighScore.m_dst.w, menuUI.m_textHighScore.m_dst.h);
   setDestRectTxt(menuUI.m_textBreakout, 180, 200, menuUI.m_textBreakout.m_dst.w, menuUI.m_textBreakout.m_dst.h);
 
-  setDestRectTxt(endUI.m_textReplay, 100, 100, 0, 0);
-  setDestRectTxt(endUI.m_textScore, 300, 100, 100, 100);
+  setDestRectTxt(endUI.m_textReplay, 180, 300, endUI.m_textReplay.m_dst.w, endUI.m_textReplay.m_dst.h);
+  setDestRectTxt(endUI.m_textScore, 180, 300, endUI.m_textScore.m_dst.w, endUI.m_textScore.m_dst.h);
+
   // GET TEXTURE WIDTH/HEIGHT
-
   Text& highScore = ui.m_menu.m_textHighScore;
-
   Text& start = ui.m_menu.m_textStart;
   Text& breakout = ui.m_menu.m_textBreakout;
+
+  Text& replay = ui.m_endUI.m_textReplay;
+  Text& score = ui.m_endUI.m_textScore;
 
   SDL_GetTextureSize(highScore.m_textTexture, &highScore.m_dst.w, &highScore.m_dst.h);
   SDL_GetTextureSize(start.m_textTexture, &start.m_dst.w, &start.m_dst.h);
   SDL_GetTextureSize(breakout.m_textTexture, &breakout.m_dst.w, &breakout.m_dst.h);
 
+  SDL_GetTextureSize(score.m_textTexture, &score.m_dst.w, &score.m_dst.h);
+  SDL_GetTextureSize(replay.m_textTexture, &replay.m_dst.w, &replay.m_dst.h);
   // SCALE UI
   float floatScaleMainBreakout = 2.0f;
   float floatScaleStart = 1.3f;
@@ -80,6 +84,9 @@ bool setUIMenu(UI& ui, Text& t, SDL_Renderer* renderer, PlayerState& p) {
   menuUI.m_textHighScore.m_dst.w *= floatScaleScore;
   menuUI.m_textHighScore.m_dst.h *= floatScaleScore;
 
+  // POSITION UI
+
+  // Start
   menuUI.m_textBreakout.m_dst.x = (Config::screenWidth - menuUI.m_textBreakout.m_dst.w) / 2.0f;
   menuUI.m_textBreakout.m_dst.y = (Config::screenHeight - menuUI.m_textBreakout.m_dst.h) / 2.0f - 130;
 
@@ -88,7 +95,13 @@ bool setUIMenu(UI& ui, Text& t, SDL_Renderer* renderer, PlayerState& p) {
 
   menuUI.m_textHighScore.m_dst.x = (Config::screenWidth - menuUI.m_textHighScore.m_dst.w) / 2.0f;
   menuUI.m_textHighScore.m_dst.y = ((Config::screenHeight - menuUI.m_textHighScore.m_dst.h) / 2.0f) + 130;
-  //
+  // END
+  endUI.m_textReplay.m_dst.x = (Config::screenWidth - endUI.m_textReplay.m_dst.w) / 2.0f;
+  endUI.m_textReplay.m_dst.y = (Config::screenHeight - endUI.m_textReplay.m_dst.h) / 2.0f - 130;
+
+  endUI.m_textScore.m_dst.x = (Config::screenWidth - endUI.m_textScore.m_dst.w) / 2.0f;
+  endUI.m_textScore.m_dst.y = (Config::screenHeight - endUI.m_textScore.m_dst.h) / 2.0f + 65;
+
   // ASSIGN TO META UI
   ui.m_endUI = endUI;
   ui.m_menu = menuUI;
